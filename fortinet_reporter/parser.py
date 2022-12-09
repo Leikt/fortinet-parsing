@@ -9,73 +9,47 @@ def parse(stream: StreamHandler) -> Any:
         stream.skip_comments()
         keyword = stream.token_choices(KEYWORDS)
         subparser: Parser = SUBPARSERS[keyword]
-        data.append(subparser(stream))
+        data.append(subparser(keyword, stream))
     return data
 
 
-def parse_config(stream: StreamHandler) -> Any:
+def parse_block(keyword: str, stream: StreamHandler) -> Any:
     data = {
-        'type': 'config',
+        'type': keyword,
         'parameters': stream.tokens_to_eol(),
         'data': []
     }
     stream.expect_eol()
     while stream.next():
-        if stream.token() == 'end':
+        if stream.token() == BLOCKEND_KEYWORDS[keyword]:
             break
         stream.skip_comments()
-        keyword = stream.token_choices(KEYWORDS)
-        subparser: Parser = SUBPARSERS[keyword]
-        data['data'].append(subparser(stream))
+        sub_keyword = stream.token_choices(KEYWORDS)
+        subparser: Parser = SUBPARSERS[sub_keyword]
+        data['data'].append(subparser(sub_keyword, stream))
     stream.next()
     stream.expect_eol()
     return data
 
 
-def parse_edit(stream: StreamHandler) -> Any:
-    data = {
-        'type': 'edit',
-        'name': stream.get_next(),
-        'data': []
-    }
-    stream.next()
-    stream.expect_eol()
-    while stream.next():
-        if stream.token() == 'next':
-            break
-        stream.skip_comments()
-        keyword = stream.token_choices(KEYWORDS)
-        subparser: Parser = SUBPARSERS[keyword]
-        data['data'].append(subparser(stream))
-    stream.next()
-    stream.expect_eol()
-    return data
-
-
-def parse_set(stream: StreamHandler) -> Any:
+def parse_line(keyword: str, stream: StreamHandler) -> Any:
     return {
-        'type': 'set',
+        'type': keyword,
         'name': stream.get_next(),
         'parameters': stream.tokens_to_eol()
     }
 
 
-def parse_unset(stream: StreamHandler) -> Any:
-    data = {
-        'type': 'unset',
-        'name': stream.get_next()
-    }
-    stream.next()
-    stream.expect_eol()
-    return data
-
-
-Parser = Callable[[StreamHandler], Any]
+Parser = Callable[[str, StreamHandler], Any]
 
 SUBPARSERS: Dict[str, Parser] = {
-    'config': parse_config,
-    'edit': parse_edit,
-    'set': parse_set,
-    'unset': parse_unset
+    'config': parse_block,
+    'edit': parse_block,
+    'set': parse_line,
+    'unset': parse_line
 }
 KEYWORDS = list(SUBPARSERS.keys())
+BLOCKEND_KEYWORDS = {
+    'config': 'end',
+    'edit': 'next'
+}
