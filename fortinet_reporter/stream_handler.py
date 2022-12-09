@@ -24,9 +24,12 @@ class StreamHandler:
         self._index = -1
         self._token = None
         self._len = len(self._data)
+        self._line_number = 1
 
     def next(self) -> bool:
         """Move the stream to the next token."""
+        if self.is_new_line():
+            self._line_number += 1
         self._index += 1
         if self._index >= self._len:
             self._token = None
@@ -44,7 +47,7 @@ class StreamHandler:
         try:
             return t(self._token)
         except ValueError:
-            raise ValueError(f"Expect token of type '{t}' but got '{self._token}' ({type(self._token)})")
+            raise ValueError(f"(Line {self._line_number}) Expect token of type '{t}' but got '{self._token}' ({type(self._token)})")
 
     def is_new_line(self) -> bool:
         """Check if the token is a new line."""
@@ -63,7 +66,7 @@ class StreamHandler:
         """Check if the current token is one of these choices and returns it."""
         token = self.token(t)
         if token not in choices:
-            raise ValueError(f"Expect one of {choices} but got '{token}'.")
+            raise ValueError(f"(Line {self._line_number}) Expect one of {choices} but got '{token}'.")
         return token
 
     def tokens_to_eol(self) -> List[str]:
@@ -76,4 +79,4 @@ class StreamHandler:
     def expect_eol(self):
         if self.is_new_line() or self._token is None:
             return
-        raise SyntaxError("Expect new line.")
+        raise SyntaxError("(Line {self._line_number}) Expect new line.")
