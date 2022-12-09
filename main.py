@@ -1,10 +1,11 @@
+import json
+from pathlib import Path
+
+from fortinet_reporter.parser import parse
 from fortinet_reporter.stream_handler import StreamHandler
 
-stream = StreamHandler('data/C8ASPFIRACC.conf')
-
-while stream.next():
-    # stream.next()
-    stream.skip_comments()
-    token = stream.token_choices(['config', 'set', 'edit', 'unset', 'end', 'next'])
-    parameters = stream.tokens_to_eol()
-    print(token, parameters)
+source_code = Path('data/C8ASPFIRACC.conf').read_text()
+stream = StreamHandler(source_code)
+data: list = parse(stream)
+with open('data/parsed.json', 'w') as file:
+    json.dump(data, file)

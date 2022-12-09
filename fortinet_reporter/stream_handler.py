@@ -1,7 +1,5 @@
 import shlex
-from os import PathLike
-from pathlib import Path
-from typing import Union, TypeVar, List
+from typing import TypeVar, List
 
 T = TypeVar('T')
 
@@ -18,8 +16,8 @@ class StreamHandler:
         current_int_token = stream_handler.token(int)
     """
 
-    def __init__(self, filename: Union[str, PathLike]):
-        lines = Path(filename).read_text().splitlines()
+    def __init__(self, source_code: str):
+        lines = source_code.splitlines()
         lines = [line.strip() for line in lines]
         mono_line = f' {NEW_LINE} '.join(lines)
         self._data = shlex.split(mono_line)
@@ -35,6 +33,11 @@ class StreamHandler:
             return False
         self._token = self._data[self._index]
         return True
+
+    def get_next(self, t: T = str) -> T:
+        """Get the next token"""
+        self.next()
+        return self.token(t)
 
     def token(self, t: T = str) -> T:
         """Get the token and convert it to the given type."""
@@ -69,3 +72,8 @@ class StreamHandler:
         while self.next() and not self.is_new_line():
             tokens.append(self.token())
         return tokens
+
+    def expect_eol(self):
+        if self.is_new_line() or self._token is None:
+            return
+        raise SyntaxError("Expect new line.")
