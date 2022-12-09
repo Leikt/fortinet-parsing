@@ -40,19 +40,22 @@ def _create_worksheet(data, workbook, formats, sheet_name, setup):
                 continue
 
             row_data.append(_get_value(values, key))
-        worksheet.write_row(y, 0, row_data, formats['element'])
+        format_name = 'element_odd' if y % 2 == 1 else 'element_even'
+        worksheet.write_row(y, 0, row_data, formats[format_name])
 
 
 def _setup_formats(workbook):
     return {
         'header': workbook.add_format(FORMAT_HEADERS),
-        'element': workbook.add_format(FORMAT_ELEMENT)
+        'element_odd': workbook.add_format(FORMAT_ELEMENT_ODD),
+        'element_even': workbook.add_format(FORMAT_ELEMENT_EVEN)
     }
 
 
 FORMAT_HEADERS = {"align": "center", "valign": "center", "bold": True, "bg_color": "#4287f5", "font_color": "white",
                   "text_wrap": True}
-FORMAT_ELEMENT = {"align": "center", "valign": "left", "text_wrap": True}
+FORMAT_ELEMENT_EVEN = {"align": "center", "valign": "left", "text_wrap": True, "bg_color": "#d7e5fc"}
+FORMAT_ELEMENT_ODD = {"align": "center", "valign": "left", "text_wrap": True, "bg_color": "#edf2fa"}
 
 WS_ADDRESSES = [
     ('Name', 40, None),
@@ -111,6 +114,14 @@ WS_SERVICES_GROUPS = [
     ('Members', 60, 'member')
 ]
 
+WS_VIP = [
+    ('URL', 40, None),
+    ('Ext IP', 20, 'extip'),
+    ('Mapped IP', 20, 'mappedip'),
+    ('Ext Intf', 10, 'extintf'),
+    ('Comment', 60, 'comment')
+]
+
 WORKSHEETS = [
     {
         'name': 'Addresses',
@@ -136,5 +147,10 @@ WORKSHEETS = [
         'name': 'Services Groups',
         'setup': WS_SERVICES_GROUPS,
         'selector': lambda d: d['firewall']['service']['group']
+    },
+    {
+        'name': 'VIP',
+        'setup': WS_VIP,
+        'selector': lambda d: d['firewall']['vip']
     }
 ]
