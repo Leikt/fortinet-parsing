@@ -10,7 +10,7 @@ class StreamHandler:
     """Handle the stream of tokens in the configuration file
 
     **Usage**
-    stream_handler = StreamHandler("path/to/configuration_file")
+    stream_handler = StreamHandler("source_code")
     while stream_handler.next():
         current_token = stream_handler.token()
         current_int_token = stream_handler.token(int)
@@ -66,7 +66,7 @@ class StreamHandler:
         """Check if the current token is one of these choices and returns it."""
         token = self.token(t)
         if token not in choices:
-            raise ValueError(f"(Line {self._line_number}) Expect one of {choices} but got '{token}'.")
+            raise SyntaxError(f"(Line {self._line_number}) Expect one of {choices} but got '{token}'.")
         return token
 
     def tokens_to_eol(self) -> List[str]:

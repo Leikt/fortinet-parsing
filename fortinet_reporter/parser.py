@@ -1,10 +1,10 @@
 from functools import partial
-from typing import Any
 
 from .stream_handler import StreamHandler
 
 
-def parse(stream: StreamHandler) -> Any:
+def parse(stream: StreamHandler) -> dict:
+    """Main parsing function. Give it the stream and get the parsed configuration in output."""
     context = {}
     while stream.next():
         stream.skip_comments()
@@ -14,12 +14,14 @@ def parse(stream: StreamHandler) -> Any:
 
 
 def parse_set(context: dict, stream: StreamHandler) -> None:
+    """Parses the 'set' keyword."""
     name = stream.get_next()
     values = stream.tokens_to_eol()
     context[name] = values
 
 
 def parse_unset(context: dict, stream: StreamHandler) -> None:
+    """Parses the 'unset' keyword."""
     names = stream.tokens_to_eol()
     for name in names:
         if name in context:
@@ -27,6 +29,7 @@ def parse_unset(context: dict, stream: StreamHandler) -> None:
 
 
 def parse_block(context: dict, stream: StreamHandler, end_keyword: str) -> None:
+    """Parses a block and its content into sub contexts."""
     path = stream.tokens_to_eol()
     for key in path:
         context[key] = context.get(key, dict())
