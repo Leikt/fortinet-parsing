@@ -1,12 +1,9 @@
 import xlsxwriter
 from xlsxwriter.worksheet import Worksheet
 
-FORMAT_HEADERS = {"align": "center", "valign": "center", "bold": True, "bg_color": "#4287f5", "font_color": "white",
-                  "text_wrap": True}
-FORMAT_ELEMENT = {"align": "center", "valign": "left", "text_wrap": True}
-
 
 def generate(data: dict, output_file: str):
+    """Main generation function."""
     workbook = xlsxwriter.Workbook(output_file)
     formats = _setup_formats(workbook)
     for ws in WORKSHEETS:
@@ -21,13 +18,6 @@ def _get_value(data, key) -> str:
     if key in data:
         return ', '.join(data[key])
     return ''
-
-
-def _setup_formats(workbook):
-    return {
-        'header': workbook.add_format(FORMAT_HEADERS),
-        'element': workbook.add_format(FORMAT_ELEMENT)
-    }
 
 
 def _setup_columns(worksheet: Worksheet, columns, formatting):
@@ -52,6 +42,17 @@ def _create_worksheet(data, workbook, formats, sheet_name, setup):
             row_data.append(_get_value(values, key))
         worksheet.write_row(y, 0, row_data, formats['element'])
 
+
+def _setup_formats(workbook):
+    return {
+        'header': workbook.add_format(FORMAT_HEADERS),
+        'element': workbook.add_format(FORMAT_ELEMENT)
+    }
+
+
+FORMAT_HEADERS = {"align": "center", "valign": "center", "bold": True, "bg_color": "#4287f5", "font_color": "white",
+                  "text_wrap": True}
+FORMAT_ELEMENT = {"align": "center", "valign": "left", "text_wrap": True}
 
 WS_ADDRESSES = [
     ('Name', 40, None),
