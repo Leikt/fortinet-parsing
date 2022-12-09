@@ -1,7 +1,7 @@
 import unittest
 
-from fortinet_reporter.parser import parse_set, parse_unset, parse_config
-from fortinet_reporter.stream_handler import StreamHandler
+from fortiweb_conf_parser.parser import parse_set, parse_unset, parse_block
+from fortiweb_conf_parser.stream_handler import StreamHandler
 
 
 class TestParser(unittest.TestCase):
@@ -36,7 +36,7 @@ class TestParser(unittest.TestCase):
         context = {}
         stream.next()
 
-        parse_config(context, stream)
+        parse_block(context, stream, 'end')
         self.assertEqual({
             'c1': {
                 'glob': {

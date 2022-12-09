@@ -35,7 +35,7 @@ c"""
     def test_choices_exception(self):
         stream = StreamHandler("ka")
         stream.next()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SyntaxError):
             stream.token_choices(['valid_kw'])
 
     def test_token_casting(self):
