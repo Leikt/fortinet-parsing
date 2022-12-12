@@ -3,7 +3,7 @@
 ## Prerequisites
 
 1. Install the requirements with `python -m pip install ./requirements.txt`
-2. Install the packages with `python -m pip install fortiweb_conf_parser generate_xlsx`
+2. Navigate to the fortinet_reporting folder
 
 ## Parse configuration
 
