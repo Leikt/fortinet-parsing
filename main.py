@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import fortiweb_conf_parser
-import fortiweb_report
+import generate_xlsx
 
 
 def main(config_file: str, xlxs_output: str, json_output: str):
@@ -11,8 +11,8 @@ def main(config_file: str, xlxs_output: str, json_output: str):
     data: dict = fortiweb_conf_parser.parse(stream)
     with open(json_output, 'w') as file:
         json.dump(data, file)
-    fortiweb_report.generate(data, xlxs_output)
+    generate_xlsx.generate_from_files(json_output, xlxs_output)
 
 
 if __name__ == "__main__":
-    main('data/C8ASPFIRACC.conf', 'data/matrice.xlsx', 'data/data.json')
+    main('data/C8ASPFIRACC.conf', 'data/fortiweb_report.toml', 'data/data.json')
