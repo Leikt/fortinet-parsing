@@ -77,7 +77,7 @@ Methods used to select the data rendered in a sheet.
 
 Arguments: list of keys
 
-Exemple:
+Example:
 
 ```toml
 selector = "path"
