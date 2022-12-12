@@ -12,7 +12,7 @@ parser.add_argument('dest', type=Path,
                     help='Path to the output json file')
 args = parser.parse_args()
 
-source_code = args.config.read_text()
+source_code = args.config.read_text('utf-8')
 stream = StreamHandler(source_code)
 data = parse(stream)
-args.dest.write_text(json.dumps(data))
+args.dest.write_text(json.dumps(data), 'utf-8')

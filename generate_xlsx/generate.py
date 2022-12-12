@@ -1,5 +1,6 @@
 import json
 from os import PathLike
+from pathlib import Path
 from typing import Dict, List, Union
 
 import toml
@@ -12,10 +13,8 @@ from generate_xlsx.selectors import select_data
 
 def generate_from_files(data_file: Union[str, PathLike], config_file: Union[str, PathLike]):
     """Generate the report using the data and configuration in the given files."""
-    with open(data_file, 'r') as file:
-        data = json.load(file)
-    with open(config_file, 'r') as file:
-        config = toml.load(file)
+    data = json.loads(Path(data_file).read_text('utf-8'))
+    config = toml.loads(Path(config_file).read_text('utf-8'))
     generate(data, config)
 
 
