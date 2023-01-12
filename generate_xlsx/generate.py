@@ -1,7 +1,7 @@
 import json
 from os import PathLike
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 import toml
 from xlsxwriter import Workbook
@@ -59,6 +59,7 @@ def _create_worksheet(data: dict, workbook: Workbook, formats: dict, sheet_name:
                 row_data.append(_get_value(values, key))
         format_name = f"element_{['even', 'odd'][y % 2]}"
         worksheet.write_row(y, 0, row_data, formats[format_name])
+        _write_glossary(worksheet, y, row_data)
 
 
 def _setup_columns(worksheet: Worksheet, columns, formatting):
@@ -74,3 +75,25 @@ def _get_value(data, key) -> str:
     if key in data:
         return ', '.join(data[key])
     return ''
+
+
+def _write_glossary(worksheet, row_id: int, row_data: List[str]):
+    """Write the comments from the glossary."""
+    for x, value in enumerate(row_data):
+        comment = Glossary.get(value)
+        if comment is not None:
+            worksheet.write_comment(row_id, x, comment)
+
+
+class Glossary:
+    _glossary: Dict[str, str] = None
+
+    @classmethod
+    def load(cls, filename: str):
+        cls._glossary = toml.load(filename)
+
+    @classmethod
+    def get(cls, item: str) -> Optional[str]:
+        if cls._glossary is None:
+            return None
+        return cls._glossary.get(item)
