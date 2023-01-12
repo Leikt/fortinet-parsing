@@ -11,10 +11,17 @@ from xlsxwriter.worksheet import Worksheet
 from generate_xlsx.selectors import select_data
 
 
-def generate_from_files(data_file: Union[str, PathLike], config_file: Union[str, PathLike]):
+def generate_from_files(config_file: Union[str, PathLike]):
     """Generate the report using the data and configuration in the given files."""
-    data = json.loads(Path(data_file).read_text('utf-8'))
     config = toml.loads(Path(config_file).read_text('utf-8'))
+    _validate_config(config)
+
+    data = json.loads(Path(config['general']['source']).read_text('utf-8'))
+
+    glossary = config.get('glossary')
+    if glossary is not None:
+        Glossary.set(glossary)
+
     generate(data, config)
 
 
@@ -22,8 +29,6 @@ def generate(data: dict, config: dict):
     """Generate a workbook using the configuration and the given data."""
     workbook = Workbook(config['general']['destination'])
     formats = _setup_formats(workbook, config.get('formats', {}))
-    if config['general'].get('glossary'):
-        Glossary.load(config['general']['glossary'])
     for ws in config['sheet']:
         name = ws['name']
         selector = ws['selector']
@@ -31,6 +36,20 @@ def generate(data: dict, config: dict):
         columns = _build_columns_info(ws['column'])
         _create_worksheet(select_data(selector, selector_args, data), workbook, formats, name, columns)
     workbook.close()
+
+
+def _validate_config(config: dict):
+    if 'general' not in config:
+        raise ValueError("Config must have a 'general' section")
+
+    if 'sheet' not in config:
+        raise ValueError("Config must have at least one 'sheet' section")
+
+    if 'source' not in config['general']:
+        raise ValueError("Config must have general.source value")
+
+    if 'destination' not in config['general']:
+        raise ValueError("COnfig must have a general.destination value")
 
 
 def _setup_formats(workbook: Workbook, formats_config: dict) -> Dict[str, Format]:
@@ -93,6 +112,10 @@ class Glossary:
     @classmethod
     def load(cls, filename: str):
         cls._glossary = toml.load(filename)
+
+    @classmethod
+    def set(cls, data: dict):
+        cls._glossary = data
 
     @classmethod
     def get(cls, item: str) -> Optional[str]:
