@@ -19,6 +19,10 @@ def generate_from_files(config_file: Union[str, PathLike]):
     data = json.loads(Path(config['general']['source']).read_text('utf-8'))
 
     glossary = config.get('glossary')
+    if glossary is None:
+        glossary = config['general'].get('glossary')
+        if glossary is not None:
+            glossary = toml.loads(Path(glossary).read_text('utf-8'))
     if glossary is not None:
         Glossary.set(glossary)
 

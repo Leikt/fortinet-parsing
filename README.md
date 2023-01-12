@@ -46,10 +46,11 @@ It's a toml file with the following categories
 # General configuration information
 destination = 'path/to/result/file.xlsx'    # The final xlsx file
 source = 'path/to/data.json'                # The data used to generate the report
+glossary = 'path/to/glossary.toml'          # Optional - Path to the glossary file, will be overwritten by the [glossary] section
 
 [glossary]                                          # Optional
-value_without_spaces="description of the value"     # The descriptions will be put as comments
-"value with space"="description of the value"       # of the cells where the value match the key
+value_without_spaces = "description of the value"   # The descriptions will be put as comments
+"value with space" = "description of the value"     # of the cells where the value match the key
 
 [formats]               # Optional
 [formats.header]        # Define the format of the headers
