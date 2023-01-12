@@ -46,6 +46,7 @@ It's a toml file with the following categories
 # General configuration information
 destination = 'path/to/result/file.xlsx'    # The final xlsx file
 source = 'path/to/data.json'                # The data used to generate the report
+glossary = 'path/to/glossary.toml'          # The glossary file to use to set the comments
 
 [formats]               # Optional
 [formats.header]        # Define the format of the headers
