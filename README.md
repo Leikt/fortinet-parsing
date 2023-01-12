@@ -34,7 +34,7 @@ The second one needs to be writen manually following these rules.
 
 Once you have these two files, run the following command to generate the xlsx file :
 ```bash
-python -m generate_xlsx path/to/data.json path/to/config.toml
+python -m generate_xlsx path/to/config.toml
 ```
 
 ### XLSX generation configuration
@@ -46,7 +46,10 @@ It's a toml file with the following categories
 # General configuration information
 destination = 'path/to/result/file.xlsx'    # The final xlsx file
 source = 'path/to/data.json'                # The data used to generate the report
-glossary = 'path/to/glossary.toml'          # The glossary file to use to set the comments
+
+[glossary]                                          # Optional
+value_without_spaces="description of the value"     # The descriptions will be put as comments
+"value with space"="description of the value"       # of the cells where the value match the key
 
 [formats]               # Optional
 [formats.header]        # Define the format of the headers
