@@ -22,6 +22,8 @@ def generate(data: dict, config: dict):
     """Generate a workbook using the configuration and the given data."""
     workbook = Workbook(config['general']['destination'])
     formats = _setup_formats(workbook, config.get('formats', {}))
+    if config['general'].get('glossary'):
+        Glossary.load(config['general']['glossary'])
     for ws in config['sheet']:
         name = ws['name']
         selector = ws['selector']
